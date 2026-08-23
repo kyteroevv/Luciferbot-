@@ -486,4 +486,24 @@ async def aryan_command(event):
     ]
     await edit_or_reply(event, random.choice(aryan_lines))
 
-@CipherElite.on(events.NewMessage(pattern=r
+@CipherElite.on(events.NewMessage(pattern=r"^\.dala$", outgoing=True))
+@rishabh()
+async def dala_command(event):
+    if event.fwd_from: return
+    dala_lines = [
+        "Oye dala! Tera dimaag aur WhatsApp ka last seen dono hi hamesha gayab hi rehte hain! 👻😂",
+        "Suna hai dala bhai jab shuru hote hain, toh lagta hai bina mute kiye koi loudspeaker baj raha ho! 📢🤦‍♂️",
+        "Bade bade teer-andaz fail ho gaye, par dala ka overconfidence dekh kar lagta hai ki ise Nobel Prize milna chahiye! 🏆😂"
+    ]
+    await edit_or_reply(event, random.choice(dala_lines))
+
+@CipherElite.on(events.NewMessage(pattern=r"^\.kunal$", outgoing=True))
+@rishabh()
+async def kunal_command(event):
+    if event.fwd_from: return
+    kunal_funny_lines = [
+        "Oye Kunal! Tera dimaag aur free ka Wi-Fi dono hi kabhi time par connect nahi hote! 📶🤦‍♂️😂",
+        "Kunal jab bhi serious hone ki koshish karta hai, bhagwan upar se popcorn lekar baith jaate hain ki 'chalo aaj phir comedy chalegi'! 🍿🤡",
+        "Oye Kunal, tu jab WhatsApp par typing dikhata hai na, toh poora group darr jata hai ki ab kaun sa bada pranks ya bakwas aane wali hai! 📱⚠️😂"
+    ]
+    await edit_or_reply(event, random.choice(kunal_funny_lines))
