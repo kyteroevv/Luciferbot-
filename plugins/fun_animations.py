@@ -46,16 +46,17 @@ def init(client):
         ".meteor    - Meteor impact & earth quake animation",
         ".nuclear   - Nuclear missile launch sequence animation",
         ".casino    - Casino slot machine jackpot animation",
-        ".wifi      - WiFi signal hack & disconnect animation",
-        ".ghost     - Ghost mode invisibility animation",
-        # --- Classic Animations ---
-        ".mind      - Brain cleanup sequence",
-        ".explode   - Explosive animation",
-        ".dial      - Simulate a call to a VIP",
-        ".zap       - Zap someone with a fun animation",
-        ".joke      - Tell a random funny joke"
+        # --- Gang Roasts & Vibe Commands ---
+        ".jk        - Sad / deep shayaris",
+        ".bila      - Romantic shayari vibe for Bila",
+        ".satya     - Berozgari & reality comedy",
+        ".fly       - Funny roast for friend girl",
+        ".aaro      - Safe & funny roast for Aaro",
+        ".aryan     - Aryan bhai dialogue & funny lines",
+        ".dala      - Funny roast line for Dala",
+        ".kunal     - Pure funny roast for Kunal"
     ]
-    description = "Mega collection of all desi swag, flirt lines, massive animations and auto-tag responder"
+    description = "Mega collection of all desi swag, flirt lines, massive animations, gang roasts and auto-tag responder"
     add_handler("mega_ultimate_master", commands, description)
 
 async def edit_or_reply(event, text):
@@ -208,18 +209,7 @@ async def flirt_command(event):
         "Kya aap WiFi ho? Kyunki jabse aapko dekha hai, ek strong connection feel ho raha hai! 📶❤️",
         "Log kehte hain ki duniya mein har cheez ki koi na koi limit hoti hai, par tum par aakar meri yeh limit khatam ho jaati hai! ✨🌹",
         "Agar khoobsurati ek crime hoti, toh aapko umar-kaid ki saza mil chuki hoti! 🚔😍",
-        "Aapki aankhon mein kuch aisi baat hai, ki hum bina piye hi behak jaate hain! 🥂💫",
-        "Tumhe paane ke liye dua toh nahi ki, par jab se tum mile ho, har dua mein bas tumhara hi naam aata hai! 🤲❤️",
-        "Suna hai ki pyaar andha hota hai... par jabse tumhein dekha hai, mujhe sab kuch bilkul saaf-saaf dikhne laga hai! 👀✨",
-        "Tumhe dekh kar lagta hai ki khuda ne aaj koi aur kaam nahi kiya hoga, bas tumhe banane mein poori jaan laga di hogi! 🎨💖",
-        "Aapka gussa bhi itna pyaara lagta hai ki dil karta hai baar-baar koi galti karte rahein! 🤭⚡",
-        "Zindagi ke safar mein humein hazaron log mile, par aap jaisa 'bug' kisi ke code mein nahi mila jo seedha dil mein fix ho jaye! 💻💘",
-        "Tumhari awaz sunkar aisa lagta hai jaise koi soothing playlist chal rahi ho jo kabhi khatam na ho! 🎶🌹",
-        "Apni aakhon se keh do ki humara peecha chhor dein, warna humein bhi aapse pyaar karne ki aadat ho jayegi! 😉✨",
-        "Tumhe dekhne ke baad mujhe kisi aur ki taraf dekhne ki zaroorat hi nahi padti, kyunki mera saara focus tum par hi lock ho jata hai! 🎯❤️",
-        "Tumhari baatein sunkar aisa lagta hai ki jaise koi khubsurat novel padh raha hoon jiska ant kabhi aaye hi na! 📖💫",
-        "Suno... tumse baat karke na ek alag hi sukoon milta hai, jaise poore din ki thakaan ek hi pal mein gayab ho gayi ho! ✨❤️",
-        "Tumhari har ek baat mein koi toh aisi jaadui baat hai, jo mujhe baar-baar tumhari taraf kheench leti hai! 😉🌹"
+        "Aapki aankhon mein kuch aisi baat hai, ki hum bina piye hi behak jaate hain! 🥂💫"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -230,15 +220,7 @@ async def shayari_command(event):
     shayaris = [
         "Teri adaon ka nasha hi kuch alag hai, \nDil toh chahta hai ki bas tumhe dekhte rahein, \nKambhakht ye waqt bhi tumhare aage aakar ruk jata hai! ⏳💖",
         "Aankhon se aankhon ki baat hoti hai, \nJab tum haste ho toh dil ki har fariyad poori hoti hai! ✨🌹",
-        "Na jane kyu tumhe dekhne ke baad kisi aur ko dekhne ka dil hi nahi karta, \nLagta hai khuda ne tumhare alawa sabko draft mein daal diya hai! 📱😂",
-        "Tumhari khamoshi bhi ek geet lagti hai, \nAur tumhara har ek andaz mujhe apni taraf kheenchta hai! 🎶💫",
-        "Fursat mein jab kabhi khuda ne tumhe banaya hoga, \nUsne bhi socha hoga ki aaj apni sabse khoobsurat masterpiece zameen par utaar raha hoon! 🎨❤️",
-        "Tujhse milne ke baad yeh samajh aaya, \nKi khushiyon ke liye daulat ki nahi, bas ek pyare chehre ki zaroorat hoti hai! 🌟🥰",
-        "Lafzon ki talash mein hum kahan kahan gaye, \nPar jab aap samne aaye, toh hum saare lafz bhool gaye! 📜❤️",
-        "Kitni ajeeb baat hai na, \nHum duniya bhar ki baatein yaad rakhte hain, \nPar jab tum samne aate ho toh sirf tumhara chehra yaad rehta hai! 🌙💭",
-        "Dhadkano ko bhi ab teri aadat ho gayi hai, \nJab bhi tu online aati hai, ye dil bina notification ke hi buzz karne lagta hai! 💓📱",
-        "Raat ki tanhai mein jab chand se baat hoti hai, \nKasam se, wahi baat phir tumhare sath hoti hai! ✨🌌",
-        "Zindagi ke har mod par tera sath chahiye, \nTu mile ya na mile, par teri yaadon ka yeh khubsurat ehsaas hamesha paas chahiye! 🌹🤝"
+        "Na jane kyu tumhe dekhne ke baad kisi aur ko dekhne ka dil hi nahi karta, \nLagta hai khuda ne tumhare alawa sabko draft mein daal diya hai! 📱😂"
     ]
     await edit_or_reply(event, random.choice(shayaris))
 
@@ -248,10 +230,7 @@ async def nazar_command(event):
     if event.fwd_from: return
     lines = [
         "Nazrein milti hain toh dil dhadakta hai, aur jab aap haste ho toh system hil jata hai! 👀💥",
-        "Hum toh bas aapse nazrein chura rahe thay, kambhakht dil ne aapki aankhon mein hi ghar bana liya! 🏡❤️",
-        "Aapki ek jhalak ke liye humne apne sare important kaam chhor rakhe hain! 😍⏳",
-        "Nazar jo tumse mili toh yeh pata chala, ki khoobsurati sirf kitabon mein nahi, saamne bhi baithi hoti hai! 📖✨",
-        "Tumhari ek nazar ke liye hum zamane se lad sakte hain, bas shart yeh hai ki tum humari taraf dekho! 🛡️❤️"
+        "Hum toh bas aapse nazrein chura rahe thay, kambhakht dil ne aapki aankhon mein hi ghar bana liya! 🏡❤️"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -261,9 +240,7 @@ async def chand_command(event):
     if event.fwd_from: return
     lines = [
         "Log kehte hain chand ka tukda ho aap, par sach toh yeh hai ki chand khud aapka daag chhipane ki koshish karta hai! 🌙😂",
-        "Aasmaan ka chand toh sabko dikhta hai, par mera chand toh phone ki screen par chat kar raha hai! 📱💫",
-        "Chand ko bhi guroor tha ki uske paas noor hai, phir maine aapki profile pic dikha di aur wo chup ho gaya! 🌌🔥",
-        "Log chand ko dekh kar eid manate hain, aur hum aapko dekh kar har din celebrate karte hain! 🌙🎉"
+        "Aasmaan ka chand toh sabko dikhta hai, par mera chand toh phone ki screen par chat kar raha hai! 📱💫"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -274,9 +251,7 @@ async def bc_command(event):
     responses = [
         "Abe kisko yaad kar raha hai bhai, seedhe kaam ki baat kar! 😒🔥",
         "Bole toh aag laga rakhi hai market mein! 😎⚡",
-        "Abe chup kar, kitna bolega! 🐒🤫",
-        "Bhai ka naam hi kaafi hai is field mein! 🦁👑",
-        "Suna hai tu aajkal kuch zyada hi ud raha hai? Niche utar aa! 🛬😂"
+        "Abe chup kar, kitna bolega! 🐒🤫"
     ]
     await edit_or_reply(event, random.choice(responses))
 
@@ -319,8 +294,7 @@ async def ego_command(event):
     if event.fwd_from: return
     lines = [
         "Humara ego utna hi high hai, jitna tumhari aukat se bahar ka sapna hai! 🦁🔥",
-        "Humse jalne wale log bhi kya kamaal ke hain... jalte khud hain aur roshni humari dekhte hain! 😎✨",
-        "Sher ki bhook aur humara attitude kabhi kam nahi hota! 🗿👑"
+        "Humse jalne wale log bhi kya kamaal ke hain... jalte khud hain aur roshni humari dekhte hain! 😎✨"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -362,8 +336,7 @@ async def aajkal_shayari(event):
     if event.fwd_from: return
     shayaris = [
         "Aajkal ke log pyaar mein itne andhe ho gaye hain ki, flashlight on karke bhi wafa dhoondhte hain! 🔦😂",
-        "Zindagi mein do hi cheezein tough hain—pehla code ka bug theek karna, aur doosra bewakoof doston ko samjhana! 🗿🥀",
-        "Pehle log dil se baat karte the, aajkal log sirf Wi-Fi range ke hisaab se rishte rakhte hain! 📶💀"
+        "Zindagi mein do hi cheezein tough hain—pehla code ka bug theek karna, aur doosra bewakoof doston ko samjhana! 🗿🥀"
     ]
     await edit_or_reply(event, random.choice(shayaris))
 
@@ -440,37 +413,7 @@ async def casino_animation(event):
         "🎰 Spinning the slot machine...\n`[ 🍒 | 🍋 | 🔔 ]`",
         "🎰 Changing symbols...\n`[ 7️⃣ | 7️⃣ | 🍋 ]`",
         "🎰 Almost there...\n`[ 💎 | 💎 | 🍒 ]`",
-        "🎉 **JACKPOT!** Tune saare paise jeet liye! (Par virtual wale) 💰😎"
-    ]
-    event = await edit_or_reply(event, steps[0])
-    for step in steps[1:]:
-        await asyncio.sleep(0.6)
-        await event.edit(step)
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.wifi$", outgoing=True))
-@rishabh()
-async def wifi_animation(event):
-    if event.fwd_from: return
-    steps = [
-        "📶 WiFi Signal: Strong [████]",
-        "📉 Intercepting router frequency... [██░░]",
-        "⚠️ Changing DNS and IP address...",
-        "❌ **Connection Lost!** Router ka connection uchaal diya gaya hai! 🛜💥"
-    ]
-    event = await edit_or_reply(event, steps[0])
-    for step in steps[1:]:
-        await asyncio.sleep(0.6)
-        await event.edit(step)
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.ghost$", outgoing=True))
-@rishabh()
-async def ghost_animation(event):
-    if event.fwd_from: return
-    steps = [
-        "👻 Activating Ghost Protocol...",
-        "🕶️ Hiding IP and digital footprint...",
-        "🌫️ Disappearing from public networks...",
-        "🥷 **GHOST MODE ENABLED:** Ab hum invisible hain! Koi trace nahi milega! 👻💨"
+        "🎉 **JACKPOT! 7 7 7** Saare paise bhai ke! 💰🔥"
     ]
     event = await edit_or_reply(event, steps[0])
     for step in steps[1:]:
@@ -478,73 +421,69 @@ async def ghost_animation(event):
         await event.edit(step)
 
 
-# ==================== CLASSIC ANIMATIONS ====================
+# ==================== GANG ROASTS & VIBE COMMANDS ====================
 
-@CipherElite.on(events.NewMessage(pattern=r"^\.mind$", outgoing=True))
+@CipherElite.on(events.NewMessage(pattern=r"^\.jk$", outgoing=True))
 @rishabh()
-async def mind(event):
+async def jk_command(event):
     if event.fwd_from: return
-    event = await edit_or_reply(event, "🧠 Processing...")
-    chars = ["🧠 MIND RESET 🚀", "🧠 <(•_•)> 💨", "🧠 CLEARED! ✨ Ready to rock!"]
-    for char in chars:
-        await asyncio.sleep(0.8)
-        await event.edit(char)
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.explode$", outgoing=True))
-@rishabh()
-async def explode(event):
-    if event.fwd_from: return
-    event = await edit_or_reply(event, "💥 Preparing explosion...")
-    await asyncio.sleep(0.5)
-    await event.edit("💣💣💣💣\n💥💥💥💥")
-    await asyncio.sleep(0.5)
-    await event.edit("💥 **BOOM!** Everything's gone! 😎")
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.dial$", outgoing=True))
-@rishabh()
-async def dial(event):
-    if event.fwd_from: return
-    event = await edit_or_reply(event, "📞 Dialing VIP...")
-    await asyncio.sleep(1)
-    await event.edit(f"📞 Connected with VIP!\nMe: Yo, it's {DEFAULTUSER}! 😎")
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.zap$", outgoing=True))
-@rishabh()
-async def zap(event):
-    if event.fwd_from: return
-    if not event.reply_to_msg_id:
-        await edit_or_reply(event, "⚡ Reply to a user to zap them!")
-        return
-    reply_message = await event.get_reply_message()
-    replied_user = await event.client(GetFullUserRequest(reply_message.sender_id))
-    name = replied_user.user.first_name or "Unknown"
-    await edit_or_reply(event, f"⚡ Zapping {name}...\n🔥 **{name} is toast!** 😜")
-
-@CipherElite.on(events.NewMessage(pattern=r"^\.joke$", outgoing=True))
-@rishabh()
-async def tell_joke(event):
-    if event.fwd_from: return
-    jokes = [
-        "Pati: Tum jab gusse mein hoti ho toh aur bhi khoobsurat lagti ho...\nPatni: Sachhi? 😊\nPati: Nahi, mujhe pagal kutte ki tarah lagti ho! 🐕😂",
-        "Teacher: Kal school kyun nahi aaye the?\nStudent: Sir, raste mein ek board laga tha 'Aage School hai, Dheere Chalein' toh dheere-dheere chalte pahucha toh chutti ho gayi thi! 🏫🚶‍♂️",
-        "Santa: Meri biwi mujhe har jagah dhundhti hai.\nBanta: Pyar karti hai bhai!\nSanta: Pyar nahi, shak hai ki main momos na kha raha hoon! 🥟😂"
+    shayaris = [
+        "Jise hum apni jaan maante rahe, \nWahi humari khamoshi ki wajah ban gaye! 🥀💔",
+        "Kitna ajeeb dastoor hai is duniya ka, \nJise sabse zyada chaho, wahi sabse door chala jata hai! 🌧️😔",
+        "Rula diya us shakhs ne mujhe, \nJisse maine kabhi hansna seekha tha... 🖤📉"
     ]
-    await edit_or_reply(event, random.choice(jokes))
+    await edit_or_reply(event, random.choice(shayaris))
 
+@CipherElite.on(events.NewMessage(pattern=r"^\.bila$", outgoing=True))
+@rishabh()
+async def bila_command(event):
+    if event.fwd_from: return
+    bila_lines = [
+        "Soniyaa meri jaan, tujhpe fida hai yeh dil mera! ❤️✨",
+        "Bila bhai ka andaaz aur romantic vibe kabhi fail nahi hoti! 🌹🔥"
+    ]
+    await edit_or_reply(event, random.choice(bila_lines))
 
-# ==================== AUTO MENTION RESPONDER ====================
+@CipherElite.on(events.NewMessage(pattern=r"^\.satya$", outgoing=True))
+@rishabh()
+async def satya_command(event):
+    if event.fwd_from: return
+    satya_lines = [
+        "Berozgari ka aalam yeh hai ki ab toh sapne bhi unpaid internship wale aate hain! 📉😂",
+        "Kadwa sach toh yeh hai ki hum jitna padhte hain, usse zyada toh phone ki battery drain ho jati hai! 📱🔋"
+    ]
+    await edit_or_reply(event, random.choice(satya_lines))
 
-@CipherElite.on(events.NewMessage(incoming=True))
-async def mention_responder(event):
-    if event.is_group and event.mentioned:
-        dosti_roast_replies = [
-            "Abe kisne yaad kiya mujhe? Thoda sabar kar, ya dimaag kharab ho gaya hai tera? 😂🔥",
-            "Bhai bina wajah tag mat kar, pehle apne level ka koi dhoondh le! 🥱💀",
-            "Suna hai tu mujhe yaad kar raha tha? Ja pehle thanda paani pi le! 🧊😂",
-            "Abe oye, tag karne ki aadat chhor de warna block karne mein 2 second lagenge! 🚫⚡",
-            "Tera message mil gaya, ab zyada oversmart mat ban, jaake chup-chap baith ja! 🐒🤫",
-            "Naam mat le, direct samne aakar baat kar na! 😎🦁",
-            "Lagta hai aaj tera dimaag phir se ghutne mein chala gaya hai jo mujhe tag kar raha hai! 🤡📉",
-            "Itna pyaar kyon aa raha hai bhai? Kahin mujhse koi kaam toh nahi nikalwana? 🤨💸"
-        ]
-        await event.reply(random.choice(dosti_roast_replies))
+@CipherElite.on(events.NewMessage(pattern=r"^\.fly$", outgoing=True))
+@rishabh()
+async def fly_command(event):
+    if event.fwd_from: return
+    funny_lines = [
+        "Oye sun pagli! Tujhse baat karke lagta hai ki bhagwan ne tera dimaag banate waqt coding mein koi bada bug chhor diya tha! 🐒😂",
+        "Tujhe dekh kar lagta hai ki duniya ki saari bhootniyain ek taraf aur meri ye dost ek taraf! 👻💀"
+    ]
+    await edit_or_reply(event, random.choice(funny_lines))
+
+@CipherElite.on(events.NewMessage(pattern=r"^\.aaro$", outgoing=True))
+@rishabh()
+async def aaro_command(event):
+    if event.fwd_from: return
+    safe_funny_lines = [
+        "Aaro se dosti karke ek baat samajh aa gayi, ki duniya mein dimaag kharab karne ke liye alag se dushmano ki zaroorat hi nahi padti! 🐒😂",
+        "Aaro tu jab seedhi muh baat karti hai na, toh lagta hai zaroor dal mein kuch kala hai! 🧐✨",
+        "Bhagwan ne sabko thoda-thoda dimaag diya hai, par lagta hai Aaro ki baari mein line busy thi! 📱😂"
+    ]
+    await edit_or_reply(event, random.choice(safe_funny_lines))
+
+@CipherElite.on(events.NewMessage(pattern=r"^\.aryan$", outgoing=True))
+@rishabh()
+async def aryan_command(event):
+    if event.fwd_from: return
+    aryan_lines = [
+        "Aryan bhai ke aage koi bol sakta hai kya? Aawaz hi nahi nikalne dete log darr ke maare! 🗣️🔥",
+        "Aryan bhai jab raste par chalte hain, toh gadiyan khud side ho jati hain ki bhai ka mood kharab na ho jaye! 🚗💨😎",
+        "Aryan bhai ka confidence dekh kar toh Google bhi confuse ho jata hai ki 'Search' kare ya 'Inse permission le'! 🌐🤔😂"
+    ]
+    await edit_or_reply(event, random.choice(aryan_lines))
+
+@CipherElite.on(events.NewMessage(pattern=r
