@@ -4,17 +4,23 @@
 
 import asyncio
 import random
+import os
 from collections import deque
 from telethon import events
 from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.functions.channels import EditBannedRequest
+from telethon.tl.types import ChatBannedRights
 from utils.utils import CipherElite
 from utils.decorators import rishabh
 from plugins.bot import add_handler
 
 DEFAULTUSER = "Elite User"
 
+# Simple memory storage for copyright strikes tracking (user_id: count)
+cpright_strikes = {}
+
 def init(client):
-    """Initialize the mega all-in-one plugin"""
+    """Initialize the mega all-in-one plugin with utilities and moderation"""
     commands = [
         # --- Desi & Swag ---
         ".gym       - Gym motivation & biceps flex",
@@ -54,9 +60,14 @@ def init(client):
         ".aaro      - Safe & funny roast for Aaro",
         ".aryan     - Aryan bhai dialogue & funny lines",
         ".dala      - Funny roast line for Dala",
-        ".kunal     - Pure funny roast for Kunal"
+        ".kunal     - Pure funny roast for Kunal",
+        # --- Utility & Moderation Commands ---
+        "/whois     - Get detailed user profile information",
+        "/common    - Find mutual/common info with a user",
+        "/ocr       - Extract text from an uploaded image",
+        "/cpright   - Copyright detection & auto-strike moderation"
     ]
-    description = "Mega collection of all desi swag, flirt lines, massive animations, gang roasts and auto-tag responder"
+    description = "Mega collection of desi swag, flirt lines, massive animations, gang roasts, utilities and copyright moderation"
     add_handler("mega_ultimate_master", commands, description)
 
 async def edit_or_reply(event, text):
@@ -64,6 +75,115 @@ async def edit_or_reply(event, text):
         return await event.edit(text)
     except Exception:
         return await event.reply(text)
+
+
+# ==================== UTILITY & MODERATION COMMANDS ====================
+
+@CipherElite.on(events.NewMessage(pattern=r"^/whois$", outgoing=True))
+@rishabh()
+async def whois_command(event):
+    if event.fwd_from: return
+    if not event.is_reply:
+        await edit_or_reply(event, "⚠️ Kisi user ke message par reply karke `/whois` type karein!")
+        return
+    
+    reply_msg = await event.get_reply_message()
+    try:
+        user_full = await event.client(GetFullUserRequest(reply_msg.sender_id))
+        user = user_full.user
+        bio = user_full.about or "Not Available"
+        
+        info = (
+            f"👤 **User Information Overview**\n\n"
+            f"• **Name:** {user.first_name or 'None'}\n"
+            f"• **Username:** @{user.username if user.username else 'None'}\n"
+            f"• **User ID:** `{user.id}`\n"
+            f"• **Bio:** {bio}\n"
+            f"• **Bot:** {'Yes' if user.bot else 'No'}"
+        )
+        await edit_or_reply(event, info)
+    except Exception as e:
+        await edit_or_reply(event, f"❌ Error fetching user info: `{str(e)}`")
+
+@CipherElite.on(events.NewMessage(pattern=r"^/common$", outgoing=True))
+@rishabh()
+async def common_command(event):
+    if event.fwd_from: return
+    if not event.is_reply:
+        await edit_or_reply(event, "⚠️ Kisi user ke message par reply karke `/common` type karein!")
+        return
+    
+    reply_msg = await event.get_reply_message()
+    try:
+        user_full = await event.client(GetFullUserRequest(reply_msg.sender_id))
+        common_chats = user_full.common_chats_count
+        await edit_or_reply(event, f"🔗 **Common Chats Count:** Is user ke sath aapke **{common_chats}** mutual/common groups hain.")
+    except Exception as e:
+        await edit_or_reply(event, f"❌ Error: `{str(e)}`")
+
+@CipherElite.on(events.NewMessage(pattern=r"^/ocr$", outgoing=True))
+@rishabh()
+async def ocr_command(event):
+    if event.fwd_from: return
+    if not event.is_reply:
+        await edit_or_reply(event, "⚠️ Kisi image par reply karke `/ocr` type karein!")
+        return
+    
+    reply_msg = await event.get_reply_message()
+    if not reply_msg.media:
+        await edit_or_reply(event, "⚠️ Ye message image nahi hai!")
+        return
+
+    await edit_or_reply(event, "🔍 Processing OCR...")
+    img_path = await event.client.download_media(reply_msg)
+    
+    try:
+        import pytesseract
+        from PIL import Image
+        text = pytesseract.image_to_string(Image.open(img_path))
+        if not text.strip():
+            await edit_or_reply(event, "❌ Image mein koi readable text nahi mila!")
+        else:
+            await edit_or_reply(event, f"✅ **Extracted Text:**\n\n`{text.strip()}`")
+    except Exception as e:
+        await edit_or_reply(event, f"❌ OCR Error: `{str(e)}`")
+    finally:
+        if os.path.exists(img_path):
+            os.remove(img_path)
+
+@CipherElite.on(events.NewMessage(incoming=True))
+async def copyright_detector(event):
+    if not event.chat_id: return
+    
+    flagged_keywords = ["dmca copy", "pirated link", "copyrighted content"]
+    text_content = event.raw_text.lower()
+    
+    is_flagged = any(word in text_content for word in flagged_keywords)
+    
+    if is_flagged:
+        sender_id = event.sender_id
+        if not sender_id: return
+        
+        cpright_strikes[sender_id] = cpright_strikes.get(sender_id, 0) + 1
+        strikes = cpright_strikes[sender_id]
+        
+        try:
+            await event.delete()
+            
+            if strikes >= 3:
+                banned_rights = ChatBannedRights(until_date=None, send_messages=True)
+                await event.client(EditBannedRequest(event.chat_id, sender_id, banned_rights))
+                await event.client.send_message(
+                    event.chat_id, 
+                    f"🚨 **Copyright Strike 3 Reached!** User ko baar-baar copyright violation karne par mute kar diya gaya hai. ❌"
+                )
+            else:
+                await event.client.send_message(
+                    event.chat_id, 
+                    f"⚠️ **Copyright Warning ({strikes}/3):** Yeh content copyright-protected hai! Message delete kar diya gaya hai."
+                )
+        except Exception as e:
+            print(f"Copyright moderation error: {e}")
 
 
 # ==================== DESI & SWAG COMMANDS ====================
@@ -118,7 +238,11 @@ async def bhai_command(event):
         "Bhai apna bhai hai, chahe samne poori duniya khadi ho! 🤝🔥",
         "Dosti aisi honi chahiye ki dushman bhi kahe—'Inke beech mat aana, kat loge!' 🗿⚔️",
         "Bhai ke liye jaan bhi hazir hai, bas pehle bill tera hoga! 😂🍻",
-        "Sher akela chalta hai, par jab bhai sath ho toh pura jungle apna hota hai! 🦁👑"
+        "Sher akela chalta hai, par jab bhai sath ho toh pura jungle apna hota hai! 🦁👑",
+        "Apni yaari ki misaal toh aane wali naslein bhi dengi, bas shart yeh hai ki party tu dega! 🍕🎉",
+        "Musibat chahe kitni bhi badi ho, bhai ka dialogue ek hi hota hai—'Chinta mat kar, main hoon na!' 💪✨",
+        "Sache dost wahi hote hain jo galti par gaali dein aur mushkil waqt mein sabse pehle khade milein! 🍻👊",
+        "Bhai aur bhai ka style kabhi out of fashion nahi hota! 😎⚡"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -130,7 +254,13 @@ async def dekh_command(event):
         "Abe oye! Jyada smart banne ki koshish mat kar, kat lega! 🐒🖕",
         "Beta tumse na ho payega, jaa pehle dhoodh pi le! 🍼🥱",
         "Tera level wahan hai jahan hum sochna bhi band kar dete hain! 📉🤫",
-        "Bade heavy driver ho bhai, seedhe sadak par ditch mein gir gaye! 🛺💥"
+        "Bade heavy driver ho bhai, seedhe sadak par ditch mein gir gaye! 🛺💥",
+        "Humein mat sikhao ki aage kaise chalna hai, hum apne raste khud banate hain aur dusro ke map phaad dete hain! 🦁🔥",
+        "Beta jitni teri net worth hai, utna toh hum mahine ka Wi-Fi bill bhar dete hain! 📶💸",
+        "Abe chup reh, teri baatein sunkar lagta hai ki mute button duniya ki sabse best invention hai! 🤐🔇",
+        "Humse panga lene se pehle apni aukat check kar liya kar, warna GPS bhi tera pata nahi dhoond payega! 🧭💀",
+        "Shakal se innocent aur harkato se joker lagta hai tu! 🤡🎪",
+        "Jitna dimag tu dusro ki taang khinchne mein lagata hai, utna laga leta toh aaj tu bhi kahi pahunch gaya hota! 🚶‍♂️📉"
     ]
     await edit_or_reply(event, random.choice(savage_lines))
 
@@ -141,7 +271,20 @@ async def roast_command(event):
     roasts = [
         "Bhai jab upar wala akal baant raha tha, toh tu line tod kar momos khane chala gaya tha kya? 🥟😂",
         "Teri baatein sunkar lagta hai ki tera dimag aur phone ka 1% battery ek jaisa hi kaam karta hai! 🪫📉",
-        "Tujhe dekh kar lagta hai ki Bhagwan ne bhi 'Draft' me save karke galti se publish kar diya hoga! 🗑️💀"
+        "Tujhe dekh kar lagta hai ki Bhagwan ne bhi 'Draft' me save karke galti se publish kar diya hoga! 🗑️💀",
+        "Bhai jab bhagwan akal baant raha tha, toh tu umbrella lekar khada tha ki ek boond bhi dimaag ki andar na jaye! ☂️🤣",
+        "Teri shakal dekh kar lagta hai ki mirror ko bhi roz subah tujhe dekhne ke baad apology letter likhna padta hoga! 🪞💀",
+        "Tujhe dekh kar lagta hai ki human evolution reverse direction mein chal raha hai! 🐒📉",
+        "Bhai tu jab serious baat karta hai na, toh aisi comedy hoti hai jo Kapil Sharma bhi nahi la sakta! 🎤😂",
+        "Tere paas dimaag hai ya sirf baal sambhalne ke liye khopdi di hai upar wale ne? 🧠🚫",
+        "Bhai tujhe dekh kar ek hi line yaad aati hai—'Koshish karne walon ki haar nahi hoti, par teri koshish dekh kar lagta hai umeed hi chhod deni chahiye!' 📉🔥",
+        "Tera confidence dekh kar lagta hai ki confidence aur common sense ka kabhi aamna-saamna hi nahi hua! 🤡✋",
+        "Bhai jab tu paida hua tha toh doctor ne tere gharwalo se sorry bola tha ya hospital ka bill maaf kar diya tha? 🏥😂",
+        "Tujhe dekh kar lagta hai ki Google bhi search history delete karne ki jagah tera contact block kar deta hoga! 🛑💻",
+        "Teri general knowledge dekh kar lagta hai ki school ki kitaabein tune sirf wazan badhane ke liye rakhi thi! 🎒🗿",
+        "Bhai tu itna slow hai ki agar tujhe snail race mein daal dein, toh snail bhi peechhe mud kar dekhega ki bhai raste mein kahan so gaya! 🐌💤",
+        "Tere dimaag ki loading speed itni slow hai ki 2G network bhi tujhse fast chalta hai! 📶🐢",
+        "Tujhe dekh kar lagta hai ki WhatsApp ka 'Delete for Everyone' feature sirf tere messages ke liye hi banaya gaya tha! 📱🗑️"
     ]
     await edit_or_reply(event, random.choice(roasts))
 
@@ -209,7 +352,22 @@ async def flirt_command(event):
         "Kya aap WiFi ho? Kyunki jabse aapko dekha hai, ek strong connection feel ho raha hai! 📶❤️",
         "Log kehte hain ki duniya mein har cheez ki koi na koi limit hoti hai, par tum par aakar meri yeh limit khatam ho jaati hai! ✨🌹",
         "Agar khoobsurati ek crime hoti, toh aapko umar-kaid ki saza mil chuki hoti! 🚔😍",
-        "Aapki aankhon mein kuch aisi baat hai, ki hum bina piye hi behak jaate hain! 🥂💫"
+        "Aapki aankhon mein kuch aisi baat hai, ki hum bina piye hi behak jaate hain! 🥂💫",
+        "Tumhein dekhte hi mere dil ki speed itni badh gayi hai ki lagta hai abhi charger lagana padega! ⚡💘",
+        "Aapka naam dictionary mein hona chahiye, kyunki aapke baad kisi aur ki tareef karne ke liye shabd hi nahi bachte! 📖✨",
+        "Suna hai chand zameen par nahi utarta, par lagta hai kisi ne rules tod diye hain! 🌙😍",
+        "Tumhari aankhein hain ya Google Maps? Jab bhi dekhta hoon, khud ko khoya hua paata hoon! 🗺️👀",
+        "Kya aapke paas band-aid hai? Kyunki jab main aapko dekha, toh gir kar ghutna chhil gaya mera! 🩹😂",
+        "Agar pyaar ek exam hota, toh main pakka fail ho jata... kyunki main sirf tumhe hi padhta rehta hoon! 📚❤️",
+        "Tumhari ek hasi ke liye toh hum apna pura coding syntax badal sakte hain! 💻🔥",
+        "Log coffee peene jaate hain date par, main toh tumhe bas dekhne ke liye hi poora din nikal deta hoon! ☕💫",
+        "Aapki battery 1% bhi ho na, tab bhi aapki baatein mere dil ko full charge kar deti hain! 🔋⚡",
+        "Aap itni cute ho ki tumhe dekh kar mosquito bhi kaatne se pehle selfie mangta hoga! 🦟📸",
+        "Pehle mujhe lagta tha ki taare aasmaan mein hote hain, par jabse tumhe dekha, pata chala woh toh chat par online hain! ✨📱",
+        "Tumhari baatein sunkar lagta hai ki sugar ki zaroorat hi nahi hai, profile kholte hi diabetes ho jata hai! 🍬😋",
+        "Agar tum 10 rupaye ki Pepsi ho, toh main poora ka poora cold drink factory hoon! 🥤😎",
+        "Tumhare sath waqt aise nikal jata hai, jaise Jio ka 1.5GB data raat ke 12 baje se pehle! 📉😂",
+        "Tumhe dekh kar ek hi baat yaad aati hai—'Mera dil ye pukaare aaja, mere bas mein ab nahi hai re!' 🎶💖"
     ]
     await edit_or_reply(event, random.choice(lines))
 
@@ -421,16 +579,18 @@ async def casino_animation(event):
         await event.edit(step)
 
 
-# ==================== GANG ROASTS & VIBE COMMANDS ====================
+# ==================== GANG ROASTS & VIBE COMMANDS (EXPANDED) ====================
 
 @CipherElite.on(events.NewMessage(pattern=r"^\.jk$", outgoing=True))
 @rishabh()
 async def jk_command(event):
     if event.fwd_from: return
     shayaris = [
-        "Jise hum apni jaan maante rahe, \nWahi humari khamoshi ki wajah ban gaye! 🥀💔",
-        "Kitna ajeeb dastoor hai is duniya ka, \nJise sabse zyada chaho, wahi sabse door chala jata hai! 🌧️😔",
-        "Rula diya us shakhs ne mujhe, \nJisse maine kabhi hansna seekha tha... 🖤📉"
+        "Jise hum apni jaan maante rahe, wahi humari khamoshi ki wajah ban gaye! 🥀💔",
+        "Kitna ajeeb dastoor hai is duniya ka, jise sabse zyada chaho, wahi sabse door chala jata hai! 🌧️😔",
+        "Rula diya us shakhs ne mujhe, jisse maine kabhi hansna seekha tha... 🖤📉",
+        "Waqt badla, log badle, aur phir pata chala ki hum hi bewakoof thay jo sabko apna samajh बैठे! 🥀🔄",
+        "Khamoshi se behter koi jawab nahi hota, aur dard se bada koi ustaad nahi hota! 🖤🤫"
     ]
     await edit_or_reply(event, random.choice(shayaris))
 
@@ -440,7 +600,9 @@ async def bila_command(event):
     if event.fwd_from: return
     bila_lines = [
         "Soniyaa meri jaan, tujhpe fida hai yeh dil mera! ❤️✨",
-        "Bila bhai ka andaaz aur romantic vibe kabhi fail nahi hoti! 🌹🔥"
+        "Bila bhai ka andaaz aur romantic vibe kabhi fail nahi hoti! 🌹🔥",
+        "Bila ki ek smile par toh poora shehar fida hai, baaki sab toh bas timepass hain! 😉💫",
+        "Jab Bila entry maarta hai, toh mahol apne aap romantic ho jata hai! 🎶🌹"
     ]
     await edit_or_reply(event, random.choice(bila_lines))
 
@@ -450,7 +612,9 @@ async def satya_command(event):
     if event.fwd_from: return
     satya_lines = [
         "Berozgari ka aalam yeh hai ki ab toh sapne bhi unpaid internship wale aate hain! 📉😂",
-        "Kadwa sach toh yeh hai ki hum jitna padhte hain, usse zyada toh phone ki battery drain ho jati hai! 📱🔋"
+        "Kadwa sach toh yeh hai ki hum jitna padhte hain, usse zyada toh phone ki battery drain ho jati hai! 📱🔋",
+        "Zindagi mein do hi cheezein hard hain—ek engineering ki padhai, aur doosra Satya ko subah time par uthana! ⏰😴",
+        "Satya ki pocket money aur mere phone ka net pack ek sath khatam hota hai! 💸📉"
     ]
     await edit_or_reply(event, random.choice(satya_lines))
 
@@ -460,7 +624,9 @@ async def fly_command(event):
     if event.fwd_from: return
     funny_lines = [
         "Oye sun pagli! Tujhse baat karke lagta hai ki bhagwan ne tera dimaag banate waqt coding mein koi bada bug chhor diya tha! 🐒😂",
-        "Tujhe dekh kar lagta hai ki duniya ki saari bhootniyain ek taraf aur meri ye dost ek taraf! 👻💀"
+        "Tujhe dekh kar lagta hai ki duniya ki saari bhootniyain ek taraf aur meri ye dost ek taraf! 👻💀",
+        "Fly ka attitude dekh kar lagta hai ki ye aasmaan se nahi, seedhe direct 3ri manzil ke ventilation se giri hai! 🏢😂",
+        "Tujhse behes karna matlab apne phone ka data aur dimaag dono barbad karna hai! 📶📉"
     ]
     await edit_or_reply(event, random.choice(funny_lines))
 
@@ -491,9 +657,11 @@ async def aryan_command(event):
 async def dala_command(event):
     if event.fwd_from: return
     dala_lines = [
-        "Oye dala! Tera dimaag aur WhatsApp ka last seen dono hi hamesha gayab hi rehte hain! 👻😂",
-        "Suna hai dala bhai jab shuru hote hain, toh lagta hai bina mute kiye koi loudspeaker baj raha ho! 📢🤦‍♂️",
-        "Bade bade teer-andaz fail ho gaye, par dala ka overconfidence dekh kar lagta hai ki ise Nobel Prize milna chahiye! 🏆😂"
+        "Dala bhai ki entry aisi hoti hai jaise bina invitation ke shaadi mein photobomber! 📸😂",
+        "Dala bhai jab bolte hain toh lagta hai radio ka FM signal crash ho gaya ho! 📻💥",
+        "Dala bhai ka swag dekh kar mohalle ke kutte bhi silence mode par chale jaate hain! 🐕🤫",
+        "Dala bhai ka dimaag aur calculator dono ek jaise hain—dono mein error ke alawa kuch nahi milta! 🧮💀",
+        "Jab Dala serious hota hai, toh sabse pehlehasne ka man karta hai! 😂🎭"
     ]
     await edit_or_reply(event, random.choice(dala_lines))
 
@@ -501,9 +669,11 @@ async def dala_command(event):
 @rishabh()
 async def kunal_command(event):
     if event.fwd_from: return
-    kunal_funny_lines = [
-        "Oye Kunal! Tera dimaag aur free ka Wi-Fi dono hi kabhi time par connect nahi hote! 📶🤦‍♂️😂",
-        "Kunal jab bhi serious hone ki koshish karta hai, bhagwan upar se popcorn lekar baith jaate hain ki 'chalo aaj phir comedy chalegi'! 🍿🤡",
-        "Oye Kunal, tu jab WhatsApp par typing dikhata hai na, toh poora group darr jata hai ki ab kaun sa bada pranks ya bakwas aane wali hai! 📱⚠️😂"
+    kunal_lines = [
+        "Kunal bhai ka logic sunkar Newton ne apni teesri law wapas lene ka soch liya tha! 🍎😂",
+        "Kunal tu chup hi raha kar, tere bolte hi Wi-Fi ke signals drop hone lagte hain! 📶📉",
+        "Kunal ki baaton mein utna hi sach hota hai jitna chips ke packet mein hawa nahi hoti! 🥔💀",
+        "Kunal jab gyan baantne baithta hai, toh lagta hai free ka internet khatam hone wala hai! 🌐⏳",
+        "Kunal bhai ka style dekh kar local tailoring shop wale bhi kapde silna chhod dete hain! 👔🏃‍♂️"
     ]
-    await edit_or_reply(event, random.choice(kunal_funny_lines))
+    await edit_or_reply(event, random.choice(kunal_lines))
