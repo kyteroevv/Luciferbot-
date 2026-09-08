@@ -18,16 +18,16 @@ def init(client_instance):
         ".kick - Kick a user from the group",
         ".mute - Mute a user in the group",
         ".unmute - Unmute a user in the group",
-        ".promote - Promote a user to admin",
-        ".demote - Remove admin rights from a user",
+        ".promote - Super power ke sath promote karna ⚡👑",
+        ".demote - Powerless karna (Remove admin rights)",
         ".pin - Pin a message in the group",
         ".unpin - Unpin a message in the group",
         ".purge - Delete messages in bulk by replying",
         ".vc - Start a group voice chat (Owner Only)",
-        ".leave - Leave the current group (Owner Only)",
+        ".leave - Leave the current group with style (Owner Only)",
         ".tagall - Tag all members in the group (Owner Only)",
         ".zombies - Remove deleted accounts from the group (Owner Only)",
-        ".allban - Ban all non-admin members from the group (Mass Ban)"
+        ".allban - Sab bhaad me jao (Mass Ban)"
     ]
     description = "Admin commands for group management 👮‍♂️"
     add_handler("admin", commands, description)
@@ -129,7 +129,7 @@ async def register_commands():
         if event.is_reply:
             reply = await event.get_reply_message()
             try:
-                admin_rights = ChatAdminRights(
+                super_rights = ChatAdminRights(
                     change_info=True,
                     post_messages=True,
                     edit_messages=True,
@@ -137,15 +137,16 @@ async def register_commands():
                     ban_users=True,
                     invite_users=True,
                     pin_messages=True,
+                    manage_call=True,
                     add_admins=False
                 )
                 await event.client(EditAdminRequest(
                     channel=event.chat_id,
                     user_id=reply.sender_id,
-                    admin_rights=admin_rights,
-                    rank="Admin"
+                    admin_rights=super_rights,
+                    rank="⚡ Super Admin"
                 ))
-                await event.reply("👑 User has been promoted to admin!")
+                await event.reply("⚡ Boom! User ko saari absolute Super Powers de di gayi hain! 👑🔥")
             except errors.RPCError as e:
                 await event.reply(f"❌ Failed to promote user: {e.message}")
             except Exception as e:
@@ -160,7 +161,7 @@ async def register_commands():
                 empty_rights = ChatAdminRights(
                     change_info=False, post_messages=False, edit_messages=False,
                     delete_messages=False, ban_users=False, invite_users=False,
-                    pin_messages=False, add_admins=False
+                    pin_messages=False, manage_call=False, add_admins=False
                 )
                 await event.client(EditAdminRequest(
                     channel=event.chat_id,
@@ -168,7 +169,7 @@ async def register_commands():
                     admin_rights=empty_rights,
                     rank=""
                 ))
-                await event.reply("⬇️ User has been demoted!")
+                await event.reply("⚡ Powerless kar diya, ab yeh aam insaan ban chuka hai! 🥱")
             except errors.RPCError as e:
                 await event.reply(f"❌ Failed to demote user: {e.message}")
             except Exception as e:
@@ -262,7 +263,7 @@ async def register_commands():
             return
 
         try:
-            await event.reply("👋 Group choda ja raha hai...")
+            await event.reply("🦅 Sher ka yaha ab koi kaam nahi, hum khud apni raah banate hain... Alvida! 🏴‍☠️")
             await event.client(LeaveChannelRequest(event.chat_id))
         except errors.RPCError as e:
             await event.reply(f"❌ Group leave karne me error aaya: {e.message}")
@@ -311,30 +312,21 @@ async def register_commands():
             await event.reply("❌ Yeh command sirf groups ke andar use ki ja sakti hai!")
             return
 
-        msg = await event.reply("🔍 Group me deleted accounts (Zombies) dhoonde ja rahe hain...")
+        msg = await event.reply("🧹 Cleaning deleted accounts...")
         
         zombie_count = 0
         try:
             async for user in event.client.iter_participants(event.chat_id):
                 if user.deleted:
                     try:
-                        await event.client(EditBannedRequest(
-                            channel=event.chat_id,
-                            user_id=user.id,
-                            banned_rights=ChatBannedRights(until_date=None, view_messages=True)
-                        ))
-                        await event.client(EditBannedRequest(
-                            channel=event.chat_id,
-                            user_id=user.id,
-                            banned_rights=ChatBannedRights(until_date=None, view_messages=False)
-                        ))
+                        await event.client.edit_permissions(event.chat_id, user.id, view_messages=True)
                         zombie_count += 1
                     except Exception:
                         pass
             
-            await msg.edit(f"✅ Zombie cleanup complete!\nTotal Deleted Accounts Removed: {zombie_count}")
+            await msg.edit(f"✅ Zombie cleanup finished!\nRemoved: {zombie_count}")
         except Exception as e:
-            await msg.edit(f"❌ Zombie cleanup fail ho gaya: {str(e)}")
+            await msg.edit(f"❌ Zombie cleanup failed: {str(e)}")
 
     @CipherElite.on(events.NewMessage(pattern=r"\.allban"))
     @rishabh()
@@ -347,7 +339,7 @@ async def register_commands():
             await event.reply("❌ Yeh command sirf groups ke andar use ki ja sakti hai!")
             return
 
-        msg = await event.reply("⚠️ Mass ban process shuru ho raha hai. Non-admin members ban kiye ja rahe hain...")
+        msg = await event.reply("🚶‍♂️ Sabhi ke sabhi bhaad me jao, jisko jana hai rasta napaata hai! 🚪💥")
         
         banned_count = 0
         failed_count = 0
@@ -362,15 +354,15 @@ async def register_commands():
                     continue
                 
                 try:
-                    await event.client(EditBannedRequest(
-                        channel=event.chat_id,
-                        user_id=user.id,
-                        banned_rights=ChatBannedRights(until_date=None, view_messages=True)
-                    ))
+                    await event.client.edit_permissions(
+                        event.chat_id,
+                        user.id,
+                        view_messages=True
+                    )
                     banned_count += 1
                 except Exception:
                     failed_count += 1
             
-            await msg.edit(f"✅ Mass ban complete!\nSuccessfully Banned: {banned_count}\nFailed: {failed_count}")
+            await msg.edit(f"🚪 Sabko safaaya kar diya gaya hai!\nSuccessfully Banned: {banned_count}\nFailed: {failed_count}")
         except Exception as e:
-            await msg.edit(f"❌ Mass ban process fail ho gaya: {str(e)}")
+            await msg.edit(f"❌ Mass ban failed: {str(e)}")
