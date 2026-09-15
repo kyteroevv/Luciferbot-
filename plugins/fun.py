@@ -33,5 +33,17 @@ async def register_commands():
     @rishabh()
     async def decide(event):
         decisions = ["Yes", "No", "Maybe", "Definitely", "Never"]
-        await event.reply(f" **{random.choice(decisions)}**")
+        await event.reply(f" **{random.choice(decisions)}**") 
         
+    @CipherElite.on(events.NewMessage(pattern=r"\.cocaine$"))
+    @rishabh()
+    async def cocaine(event):
+        intro = """Name :- Cocaine [ nashe wale name ke logo ke karib rehe ]😗
+From :- Swarg log [ koi manta nhi kyu ki sab jalte hai bro] 😂
+Education :- Dr. B R ambdkar jesa padha likha hu vro .. 🙂
+Hobby :- Sab kr leta hu ..
+Current Situation :- gareebi tum sab ne dekhi hogi me bhi dekh hi raha hu ..
+Dream :- khud ki dharti bana ni hai 😝"""
+
+        await event.reply(intro) 
+
